@@ -3,5 +3,7 @@
         "nestjs",
         "typeorm",
         "Injectable"
-    ]
+    ],
+    "files.autoSaveDelay": 20000,
+    "editor.tabSize": 2
 }
