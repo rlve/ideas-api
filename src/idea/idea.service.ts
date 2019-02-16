@@ -59,6 +59,7 @@ export class IdeaService {
     }
 
     await this.ideaRepository.update({ id }, data);
+    idea = await this.ideaRepository.findOne({ where: { id } });
     return await idea;
   }
 
