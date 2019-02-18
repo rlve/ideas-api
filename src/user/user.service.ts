@@ -12,12 +12,15 @@ export class UserService {
   ) {}
 
   async showAll() {
-    return await this.userRepository.find();
+    const users = await this.userRepository.find();
+    return users.map(user => user.toResponseObject());
   }
+
+  async login(data: UserDTO) {}
 
   async create(data: UserDTO) {
     const user = await this.userRepository.create(data);
     await this.userRepository.save(user);
-    return user;
+    return user.toResponseObject();
   }
 }
