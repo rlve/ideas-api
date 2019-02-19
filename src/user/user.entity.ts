@@ -6,6 +6,8 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+import { UserRO } from './user.ro';
 
 @Entity('user')
 export class UserEntity {
@@ -29,8 +31,24 @@ export class UserEntity {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  toResponseObject() {
-    const { id, created, username } = this;
-    return { id, created, username };
+  toResponseObject(showToken: boolean = true): UserRO {
+    const { id, created, username, token } = this;
+
+    const responseObject: UserRO = { id, created, username, token: undefined };
+
+    if (showToken) {
+      responseObject.token = token;
+    }
+
+    return responseObject;
+  }
+
+  async comparePassword(attempt: string) {
+    return bcrypt.compare(attempt, this.password);
+  }
+
+  private get token() {
+    const { id, username } = this;
+    return jwt.sign({ id, username }, process.env.SECRET, { expiresIn: '7d' });
   }
 }
