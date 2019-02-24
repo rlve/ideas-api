@@ -4,6 +4,7 @@ import {
   HttpException,
   ArgumentsHost,
   Logger,
+  HttpStatus,
 } from '@nestjs/common';
 
 @Catch()
@@ -13,7 +14,9 @@ export class HttpErrorFilter implements ExceptionFilter {
     const request = ctx.getRequest();
     const response = ctx.getResponse();
     const status =
-      typeof exception.getStatus === 'function' ? exception.getStatus() : '404';
+      typeof exception.getStatus === 'function'
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const errorResponse = {
       code: status,

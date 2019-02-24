@@ -12,6 +12,7 @@ import {
 import { IdeaService } from './idea.service';
 import { IdeaDTO } from './idea.dto';
 import { AuthGuard } from 'src/shared/auth.guard';
+import { User } from 'src/user/user.decorator';
 
 @Controller('api/idea')
 export class IdeaController {
@@ -19,16 +20,30 @@ export class IdeaController {
 
   private logger = new Logger('IdeaController');
 
+  private logData(options: any) {
+    const { data, id, user } = options;
+
+    if (data) {
+      this.logger.log(`DATA: ${JSON.stringify(data)}`);
+    }
+    if (id) {
+      this.logger.log(`IDEA: ${JSON.stringify(id)}`);
+    }
+    if (user) {
+      this.logger.log(`USER: ${JSON.stringify(user)}`);
+    }
+  }
+
   @Get()
-  @UseGuards(AuthGuard)
   showAllIdeas() {
     return this.ideaService.showAll();
   }
 
   @Post()
-  createIdea(@Body() data: IdeaDTO) {
-    this.logger.log(JSON.stringify(data));
-    return this.ideaService.create(data);
+  @UseGuards(AuthGuard)
+  createIdea(@Body() data: IdeaDTO, @User('id') user) {
+    this.logData({ data, user });
+    return this.ideaService.create(data, user);
   }
 
   @Get(':id')
@@ -37,13 +52,20 @@ export class IdeaController {
   }
 
   @Put(':id')
-  updateIdea(@Param('id') id: string, @Body() data: Partial<IdeaDTO>) {
-    this.logger.log(JSON.stringify(data));
-    return this.ideaService.update(id, data);
+  @UseGuards(AuthGuard)
+  updateIdea(
+    @Param('id') id: string,
+    @Body() data: Partial<IdeaDTO>,
+    @User('id') user,
+  ) {
+    this.logData({ id, data, user });
+    return this.ideaService.update(id, data, user);
   }
 
   @Delete(':id')
-  deleteIdea(@Param('id') id: string) {
-    return this.ideaService.delete(id);
+  @UseGuards(AuthGuard)
+  deleteIdea(@Param('id') id: string, @User('id') user) {
+    this.logData({ id, user });
+    return this.ideaService.delete(id, user);
   }
 }

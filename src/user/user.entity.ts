@@ -4,10 +4,12 @@ import {
   CreateDateColumn,
   Column,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { UserRO } from './user.ro';
+import { IdeaEntity } from 'src/idea/idea.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -26,18 +28,25 @@ export class UserEntity {
   @Column('text')
   password: string;
 
+  @OneToMany(type => IdeaEntity, idea => idea.author)
+  ideas: IdeaEntity[];
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  toResponseObject(showToken: boolean = true): UserRO {
-    const { id, created, username, token } = this;
+  toResponseObject(showToken: boolean = false): UserRO {
+    const { id, created, username, token, ideas } = this;
 
     const responseObject: UserRO = { id, created, username, token: undefined };
 
     if (showToken) {
       responseObject.token = token;
+    }
+
+    if (ideas) {
+      responseObject.ideas = ideas.map(idea => idea.toResponseObject());
     }
 
     return responseObject;
