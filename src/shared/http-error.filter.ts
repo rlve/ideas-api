@@ -12,7 +12,8 @@ export class HttpErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
-    const status = exception.getStatus();
+    const status =
+      typeof exception.getStatus === 'function' ? exception.getStatus() : '404';
 
     const errorResponse = {
       code: status,

@@ -6,12 +6,12 @@ import {
   Delete,
   Body,
   Param,
-  UsePipes,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { IdeaService } from './idea.service';
 import { IdeaDTO } from './idea.dto';
-import { ValidationPipe } from 'src/shared/validation.pipe';
+import { AuthGuard } from 'src/shared/auth.guard';
 
 @Controller('api/idea')
 export class IdeaController {
@@ -20,12 +20,12 @@ export class IdeaController {
   private logger = new Logger('IdeaController');
 
   @Get()
+  @UseGuards(AuthGuard)
   showAllIdeas() {
     return this.ideaService.showAll();
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
   createIdea(@Body() data: IdeaDTO) {
     this.logger.log(JSON.stringify(data));
     return this.ideaService.create(data);
@@ -37,7 +37,6 @@ export class IdeaController {
   }
 
   @Put(':id')
-  @UsePipes(ValidationPipe)
   updateIdea(@Param('id') id: string, @Body() data: Partial<IdeaDTO>) {
     this.logger.log(JSON.stringify(data));
     return this.ideaService.update(id, data);
