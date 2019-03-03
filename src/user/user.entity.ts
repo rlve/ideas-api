@@ -12,6 +12,7 @@ import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { UserRO } from './user.ro';
 import { IdeaEntity } from 'src/idea/idea.entity';
+import { CommentEntity } from 'src/comment/comment.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -33,6 +34,9 @@ export class UserEntity {
   @OneToMany(type => IdeaEntity, idea => idea.author)
   ideas: IdeaEntity[];
 
+  @OneToMany(type => CommentEntity, comment => comment.author)
+  comments: CommentEntity[];
+
   @ManyToMany(type => IdeaEntity, { cascade: true })
   @JoinTable()
   bookmarks: IdeaEntity[];
@@ -43,7 +47,7 @@ export class UserEntity {
   }
 
   toResponseObject(showToken: boolean = false): UserRO {
-    const { id, created, username, token, ideas, bookmarks } = this;
+    const { id, created, username, token, ideas, bookmarks, comments } = this;
 
     return {
       id,
@@ -52,6 +56,7 @@ export class UserEntity {
       token: showToken ? token : undefined,
       ideas: ideas && ideas.map(idea => idea.toResponseObject()),
       bookmarks: bookmarks && bookmarks.map(idea => idea.toResponseObject()),
+      comments: comments.map(comment => comment.toResponseObject()),
     };
   }
 

@@ -21,7 +21,7 @@ export class UserService {
   async showOne(userId: string): Promise<UserRO> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['ideas', 'bookmarks'],
+      relations: ['ideas', 'bookmarks', 'comments'],
     });
 
     if (!user) {

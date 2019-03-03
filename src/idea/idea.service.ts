@@ -42,7 +42,7 @@ export class IdeaService {
 
     const idea = await this.ideaRepository.findOne({
       where: { id },
-      relations: ['author', 'upvotes', 'downvotes'],
+      relations: ['author', 'upvotes', 'downvotes', 'comments'],
     });
     this.ensureExistence(idea);
 

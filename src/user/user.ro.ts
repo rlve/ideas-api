@@ -1,4 +1,5 @@
 import { IdeaRO } from 'src/idea/idea.ro';
+import { CommentRO } from 'src/comment/comment.ro';
 
 export class UserRO {
   id: string;
@@ -7,4 +8,5 @@ export class UserRO {
   token?: string;
   ideas?: IdeaRO[];
   bookmarks?: IdeaRO[];
+  comments?: CommentRO[];
 }
