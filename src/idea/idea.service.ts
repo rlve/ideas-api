@@ -145,27 +145,18 @@ export class IdeaService {
       where: { id: userId },
     });
 
-    const { upvotes, downvotes } = idea;
+    const opposite = vote === Votes.DOWN ? Votes.UP : Votes.DOWN;
 
-    if (vote === Votes.UP) {
-      if (upvotes.find(voter => voter.id === userId)) {
-        throw new HttpException(
-          'Idea already upvoted.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      idea.upvotes.push(user);
-    } else if (vote === Votes.DOWN) {
-      if (downvotes.find(voter => voter.id === userId)) {
-        throw new HttpException(
-          'Idea already downvoted.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      idea.downvotes.push(user);
+    if (idea[vote].find(voter => voter.id === user.id)) {
+      throw new HttpException('Idea already voted.', HttpStatus.BAD_REQUEST);
     }
+
+    idea[vote].push(user);
+
+    if (idea[opposite].find(voter => voter.id === user.id)) {
+      idea[opposite] = idea[opposite].filter(voter => voter.id !== user.id);
+    }
+
     await this.ideaRepository.save(idea);
 
     return idea.toResponseObject();
@@ -179,25 +170,11 @@ export class IdeaService {
     });
     this.ensureExistence(idea);
 
-    const { upvotes, downvotes } = idea;
-
-    if (vote === Votes.UP) {
-      if (!upvotes.find(voter => voter.id === userId)) {
-        throw new HttpException(
-          'Upvote does not exist',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      idea.upvotes = idea.upvotes.filter(voter => voter.id !== userId);
-    } else if (vote === Votes.DOWN) {
-      if (!downvotes.find(voter => voter.id === userId)) {
-        throw new HttpException(
-          'Downvote does not exist',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      idea.downvotes = idea.downvotes.filter(voter => voter.id !== userId);
+    if (!idea[vote].find(voter => voter.id === userId)) {
+      throw new HttpException('Vote does not exist', HttpStatus.BAD_REQUEST);
     }
+    idea[vote] = idea[vote].filter(voter => voter.id !== userId);
+
     await this.ideaRepository.save(idea);
 
     return idea.toResponseObject();
