@@ -6,4 +6,5 @@ export class UserRO {
   username: string;
   token?: string;
   ideas?: IdeaRO[];
+  bookmarks?: IdeaRO[];
 }

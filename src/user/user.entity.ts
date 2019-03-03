@@ -5,6 +5,8 @@ import {
   Column,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -31,25 +33,26 @@ export class UserEntity {
   @OneToMany(type => IdeaEntity, idea => idea.author)
   ideas: IdeaEntity[];
 
+  @ManyToMany(type => IdeaEntity, { cascade: true })
+  @JoinTable()
+  bookmarks: IdeaEntity[];
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
   toResponseObject(showToken: boolean = false): UserRO {
-    const { id, created, username, token, ideas } = this;
+    const { id, created, username, token, ideas, bookmarks } = this;
 
-    const responseObject: UserRO = { id, created, username, token: undefined };
-
-    if (showToken) {
-      responseObject.token = token;
-    }
-
-    if (ideas) {
-      responseObject.ideas = ideas.map(idea => idea.toResponseObject());
-    }
-
-    return responseObject;
+    return {
+      id,
+      created,
+      username,
+      token: showToken ? token : undefined,
+      ideas: ideas && ideas.map(idea => idea.toResponseObject()),
+      bookmarks: bookmarks && bookmarks.map(idea => idea.toResponseObject()),
+    };
   }
 
   async comparePassword(attempt: string) {

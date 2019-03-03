@@ -21,7 +21,7 @@ export class UserService {
   async showOne(userId: string): Promise<UserRO> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['ideas'],
+      relations: ['ideas', 'bookmarks'],
     });
 
     if (!user) {
@@ -42,7 +42,7 @@ export class UserService {
       );
     }
 
-    return user.toResponseObject();
+    return user.toResponseObject(true);
   }
 
   async create(data: UserDTO): Promise<UserRO> {
@@ -55,6 +55,6 @@ export class UserService {
     user = await this.userRepository.create(data);
     await this.userRepository.save(user);
 
-    return user.toResponseObject();
+    return user.toResponseObject(true);
   }
 }
