@@ -85,7 +85,6 @@ export class IdeaService {
   async addBookmark(id: string, userId: string): Promise<UserRO> {
     this.validateId(id);
     const idea = await this.ideaRepository.findOne({ where: { id } });
-
     this.ensureExistence(idea);
 
     const user = await this.userRepository.findOne({
@@ -112,6 +111,7 @@ export class IdeaService {
     this.validateId(id);
     const idea = await this.ideaRepository.findOne({ where: { id } });
     this.ensureExistence(idea);
+
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['bookmarks'],
@@ -130,6 +130,96 @@ export class IdeaService {
     await this.userRepository.save(user);
 
     return user.toResponseObject();
+  }
+
+  async upvote(id: string, userId: string): Promise<IdeaRO> {
+    this.validateId(id);
+    const idea = await this.ideaRepository.findOne({
+      where: { id },
+      relations: ['upvotes', 'downvotes'],
+    });
+    this.ensureExistence(idea);
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    const { upvotes } = idea;
+    if (upvotes.find(voter => voter.id === userId)) {
+      throw new HttpException('Idea already upvoted.', HttpStatus.BAD_REQUEST);
+    }
+
+    idea.upvotes.push(user);
+    await this.ideaRepository.save(idea);
+
+    return idea.toResponseObject();
+  }
+
+  async deleteUpvote(id: string, userId: string): Promise<IdeaRO> {
+    this.validateId(id);
+    const idea = await this.ideaRepository.findOne({
+      where: { id },
+      relations: ['upvotes', 'downvotes'],
+    });
+    this.ensureExistence(idea);
+
+    const { upvotes } = idea;
+    if (!upvotes.find(voter => voter.id === userId)) {
+      throw new HttpException('Upvote does not exist', HttpStatus.BAD_REQUEST);
+    }
+
+    idea.upvotes = idea.upvotes.filter(voter => voter.id !== userId);
+    await this.ideaRepository.save(idea);
+
+    return idea.toResponseObject();
+  }
+
+  async downvote(id: string, userId: string): Promise<IdeaRO> {
+    this.validateId(id);
+    const idea = await this.ideaRepository.findOne({
+      where: { id },
+      relations: ['upvotes', 'downvotes'],
+    });
+    this.ensureExistence(idea);
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    const { downvotes } = idea;
+    if (downvotes.find(voter => voter.id === userId)) {
+      throw new HttpException(
+        'Idea already downvoted.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    idea.downvotes.push(user);
+    await this.ideaRepository.save(idea);
+
+    return idea.toResponseObject();
+  }
+
+  async deleteDownvote(id: string, userId: string): Promise<IdeaRO> {
+    this.validateId(id);
+    const idea = await this.ideaRepository.findOne({
+      where: { id },
+      relations: ['upvotes', 'downvotes'],
+    });
+    this.ensureExistence(idea);
+
+    const { downvotes } = idea;
+    if (!downvotes.find(voter => voter.id === userId)) {
+      throw new HttpException(
+        'Downvote does not exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    idea.downvotes = idea.downvotes.filter(voter => voter.id !== userId);
+    await this.ideaRepository.save(idea);
+
+    return idea.toResponseObject();
   }
 
   private validateId(id: string) {

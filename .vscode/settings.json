@@ -1,8 +1,13 @@
 {
     "cSpell.words": [
+        "Injectable",
+        "downvote",
+        "downvoted",
+        "downvotes",
         "nestjs",
         "typeorm",
-        "Injectable"
+        "upvoted",
+        "upvotes"
     ],
     "files.autoSaveDelay": 20000,
     "editor.tabSize": 2

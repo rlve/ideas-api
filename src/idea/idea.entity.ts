@@ -38,7 +38,7 @@ export class IdeaEntity {
       ...this,
       author: this.author && this.author.toResponseObject(false),
       upvotes: this.upvotes && this.upvotes.length,
-      downvotes: this.upvotes && this.upvotes.length,
+      downvotes: this.downvotes && this.downvotes.length,
     };
   }
 }

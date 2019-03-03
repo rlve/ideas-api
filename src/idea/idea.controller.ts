@@ -82,4 +82,32 @@ export class IdeaController {
     this.logData({ id, user });
     return this.ideaService.deleteBookmark(id, user);
   }
+
+  @Post(':id/upvote')
+  @UseGuards(AuthGuard)
+  upvote(@Param('id') id: string, @User('id') user: string) {
+    this.logData({ id, user });
+    return this.ideaService.upvote(id, user);
+  }
+
+  @Delete(':id/upvote')
+  @UseGuards(AuthGuard)
+  deleteUpvote(@Param('id') id: string, @User('id') user: string) {
+    this.logData({ id, user });
+    return this.ideaService.deleteUpvote(id, user);
+  }
+
+  @Post(':id/downvote')
+  @UseGuards(AuthGuard)
+  downvote(@Param('id') id: string, @User('id') user: string) {
+    this.logData({ id, user });
+    return this.ideaService.downvote(id, user);
+  }
+
+  @Delete(':id/downvote')
+  @UseGuards(AuthGuard)
+  deleteDownvote(@Param('id') id: string, @User('id') user: string) {
+    this.logData({ id, user });
+    return this.ideaService.deleteDownvote(id, user);
+  }
 }
