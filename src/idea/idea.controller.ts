@@ -13,6 +13,7 @@ import { IdeaService } from './idea.service';
 import { IdeaDTO } from './idea.dto';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { User } from 'src/user/user.decorator';
+import { Votes } from 'src/shared/votes.enum';
 
 @Controller('api/idea')
 export class IdeaController {
@@ -87,27 +88,27 @@ export class IdeaController {
   @UseGuards(AuthGuard)
   upvote(@Param('id') id: string, @User('id') user: string) {
     this.logData({ id, user });
-    return this.ideaService.upvote(id, user);
+    return this.ideaService.vote(id, user, Votes.UP);
   }
 
   @Delete(':id/upvote')
   @UseGuards(AuthGuard)
   deleteUpvote(@Param('id') id: string, @User('id') user: string) {
     this.logData({ id, user });
-    return this.ideaService.deleteUpvote(id, user);
+    return this.ideaService.deleteVote(id, user, Votes.UP);
   }
 
   @Post(':id/downvote')
   @UseGuards(AuthGuard)
   downvote(@Param('id') id: string, @User('id') user: string) {
     this.logData({ id, user });
-    return this.ideaService.downvote(id, user);
+    return this.ideaService.vote(id, user, Votes.DOWN);
   }
 
   @Delete(':id/downvote')
   @UseGuards(AuthGuard)
   deleteDownvote(@Param('id') id: string, @User('id') user: string) {
     this.logData({ id, user });
-    return this.ideaService.deleteDownvote(id, user);
+    return this.ideaService.deleteVote(id, user, Votes.DOWN);
   }
 }
