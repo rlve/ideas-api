@@ -148,32 +148,14 @@ export class IdeaService {
     const opposite = vote === Votes.DOWN ? Votes.UP : Votes.DOWN;
 
     if (idea[vote].find(voter => voter.id === user.id)) {
-      throw new HttpException('Idea already voted.', HttpStatus.BAD_REQUEST);
+      idea[vote] = idea[vote].filter(voter => voter.id !== user.id);
+    } else {
+      idea[vote].push(user);
+
+      if (idea[opposite].find(voter => voter.id === user.id)) {
+        idea[opposite] = idea[opposite].filter(voter => voter.id !== user.id);
+      }
     }
-
-    idea[vote].push(user);
-
-    if (idea[opposite].find(voter => voter.id === user.id)) {
-      idea[opposite] = idea[opposite].filter(voter => voter.id !== user.id);
-    }
-
-    await this.ideaRepository.save(idea);
-
-    return idea.toResponseObject();
-  }
-
-  async deleteVote(id: string, userId: string, vote: Votes): Promise<IdeaRO> {
-    this.validateId(id);
-    const idea = await this.ideaRepository.findOne({
-      where: { id },
-      relations: ['upvotes', 'downvotes'],
-    });
-    this.ensureExistence(idea);
-
-    if (!idea[vote].find(voter => voter.id === userId)) {
-      throw new HttpException('Vote does not exist', HttpStatus.BAD_REQUEST);
-    }
-    idea[vote] = idea[vote].filter(voter => voter.id !== userId);
 
     await this.ideaRepository.save(idea);
 

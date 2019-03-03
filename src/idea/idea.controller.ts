@@ -91,24 +91,10 @@ export class IdeaController {
     return this.ideaService.vote(id, user, Votes.UP);
   }
 
-  @Delete(':id/upvote')
-  @UseGuards(AuthGuard)
-  deleteUpvote(@Param('id') id: string, @User('id') user: string) {
-    this.logData({ id, user });
-    return this.ideaService.deleteVote(id, user, Votes.UP);
-  }
-
   @Post(':id/downvote')
   @UseGuards(AuthGuard)
   downvote(@Param('id') id: string, @User('id') user: string) {
     this.logData({ id, user });
     return this.ideaService.vote(id, user, Votes.DOWN);
-  }
-
-  @Delete(':id/downvote')
-  @UseGuards(AuthGuard)
-  deleteDownvote(@Param('id') id: string, @User('id') user: string) {
-    this.logData({ id, user });
-    return this.ideaService.deleteVote(id, user, Votes.DOWN);
   }
 }
