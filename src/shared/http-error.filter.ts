@@ -32,6 +32,10 @@ export class HttpErrorFilter implements ExceptionFilter {
       'ExceptionFilter',
     );
 
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      Logger.error(`Internal error stack:`, exception.stack, 'ExceptionFilter');
+    }
+
     response.status(status).json(errorResponse);
   }
 }

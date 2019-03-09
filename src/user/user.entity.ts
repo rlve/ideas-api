@@ -56,7 +56,7 @@ export class UserEntity {
       token: showToken ? token : undefined,
       ideas: ideas && ideas.map(idea => idea.toResponseObject()),
       bookmarks: bookmarks && bookmarks.map(idea => idea.toResponseObject()),
-      comments: comments.map(comment => comment.toResponseObject()),
+      comments: comments && comments.map(comment => comment.toResponseObject()),
     };
   }
 

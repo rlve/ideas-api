@@ -44,7 +44,9 @@ export class IdeaEntity {
       author: this.author && this.author.toResponseObject(false),
       upvotes: this.upvotes && this.upvotes.length,
       downvotes: this.downvotes && this.downvotes.length,
-      comments: this.comments.map(comment => comment.toResponseObject()),
+      comments:
+        this.comments &&
+        this.comments.map(comment => comment.toResponseObject()),
     };
   }
 }
