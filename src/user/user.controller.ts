@@ -6,6 +6,7 @@ import {
   Logger,
   UsePipes,
   Param,
+  Query,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -20,8 +21,8 @@ export class UserController {
   private logger = new Logger('UserController');
 
   @Get('api/users')
-  showAllUsers(): Promise<UserRO[]> {
-    return this.userService.showAll();
+  showAllUsers(@Query('page') page: number): Promise<UserRO[]> {
+    return this.userService.showAll(page);
   }
 
   @Get('api/users/:id')

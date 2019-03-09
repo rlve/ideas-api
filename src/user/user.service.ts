@@ -12,8 +12,11 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async showAll(): Promise<UserRO[]> {
-    const users = await this.userRepository.find();
+  async showAll(page: number): Promise<UserRO[]> {
+    const users = await this.userRepository.find({
+      take: 20,
+      skip: 20 * (page - 1),
+    });
 
     return users.map(user => user.toResponseObject({ showToken: false }));
   }
@@ -55,6 +58,6 @@ export class UserService {
     user = await this.userRepository.create(data);
     await this.userRepository.save(user);
 
-    return user.toResponseObject({ showToken: false });
+    return user.toResponseObject({ showToken: true });
   }
 }
