@@ -67,4 +67,23 @@ export class CommentService {
 
     return comment.toResponseObject();
   }
+
+  async delete(id: string, userId: string): Promise<CommentRO> {
+    const comment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
+
+    if (!comment) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (comment.author.id !== userId) {
+      throw new HttpException('Permission denied.', HttpStatus.UNAUTHORIZED);
+    }
+
+    await this.commentRepository.delete({ id });
+
+    return comment.toResponseObject();
+  }
 }

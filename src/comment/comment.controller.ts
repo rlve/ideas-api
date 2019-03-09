@@ -6,6 +6,7 @@ import {
   Logger,
   Param,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AuthGuard } from 'src/shared/auth.guard';
@@ -52,5 +53,12 @@ export class CommentController {
   ) {
     this.logData({ commentId: id, data, user });
     return this.commentService.edit(id, data, user);
+  }
+
+  @Delete('api/comments/:id')
+  @UseGuards(AuthGuard)
+  deleteComment(@Param('id') id: string, @User('id') user) {
+    this.logData({ commentId: id, user });
+    return this.commentService.delete(id, user);
   }
 }
