@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from './comment.entity';
 import { Repository } from 'typeorm';
@@ -40,6 +40,30 @@ export class CommentService {
     });
 
     await this.commentRepository.save(comment);
+
+    return comment.toResponseObject();
+  }
+
+  async edit(
+    id: string,
+    data: Partial<CommentDTO>,
+    userId: string,
+  ): Promise<CommentRO> {
+    let comment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
+
+    if (!comment) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (comment.author.id !== userId) {
+      throw new HttpException('Permission denied.', HttpStatus.UNAUTHORIZED);
+    }
+
+    await this.commentRepository.update({ id }, data);
+    comment = await this.commentRepository.findOne({ where: { id } });
 
     return comment.toResponseObject();
   }

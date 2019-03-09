@@ -8,5 +8,5 @@ export class UserRO {
   token?: string;
   ideas?: IdeaRO[];
   bookmarks?: IdeaRO[];
-  comments?: CommentRO[];
+  comments?: CommentRO[] | number;
 }

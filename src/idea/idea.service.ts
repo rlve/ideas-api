@@ -46,7 +46,7 @@ export class IdeaService {
     });
     this.ensureExistence(idea);
 
-    return idea.toResponseObject();
+    return idea.toResponseObject({ fullComments: true });
   }
 
   async update(

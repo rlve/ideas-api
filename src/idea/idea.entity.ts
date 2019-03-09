@@ -38,15 +38,18 @@ export class IdeaEntity {
   @JoinTable()
   downvotes: UserEntity[];
 
-  toResponseObject(): IdeaRO {
+  toResponseObject({ fullComments = false } = {}): IdeaRO {
+    const getComments = full =>
+      full
+        ? this.comments.map(comment => comment.toResponseObject())
+        : this.comments.length;
+
     return {
       ...this,
-      author: this.author && this.author.toResponseObject(false),
+      author: this.author && this.author.toResponseObject(),
       upvotes: this.upvotes && this.upvotes.length,
       downvotes: this.downvotes && this.downvotes.length,
-      comments:
-        this.comments &&
-        this.comments.map(comment => comment.toResponseObject()),
+      comments: this.comments && getComments(fullComments),
     };
   }
 }

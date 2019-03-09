@@ -6,6 +6,6 @@
   "password": "rlve",
   "database": "ideas",
   "synchronize": true,
-  "logging": true,
+  "logging": false,
   "entities": ["./src/**/*.entity.ts", "./dist/**/*.entity.js"]
 }

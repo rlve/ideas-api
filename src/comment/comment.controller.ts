@@ -5,13 +5,14 @@ import {
   Body,
   Logger,
   Param,
+  Put,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { CommentDTO } from './comment.dto';
 import { User } from 'src/user/user.decorator';
 
-@Controller('api/idea')
+@Controller()
 export class CommentController {
   constructor(private commentService: CommentService) {}
 
@@ -19,7 +20,7 @@ export class CommentController {
 
   // TODO: DRY!
   private logData(options: any) {
-    const { data, id, user } = options;
+    const { data, id, user, commentId } = options;
 
     if (data) {
       this.logger.log(`DATA: ${JSON.stringify(data)}`);
@@ -30,12 +31,26 @@ export class CommentController {
     if (user) {
       this.logger.log(`USER: ${JSON.stringify(user)}`);
     }
+    if (commentId) {
+      this.logger.log(`COMMENT: ${JSON.stringify(commentId)}`);
+    }
   }
 
-  @Post(':id/comment')
+  @Post('api/idea/:id/comment')
   @UseGuards(AuthGuard)
   comment(@Param('id') id: string, @Body() data: CommentDTO, @User('id') user) {
     this.logData({ id, data, user });
     return this.commentService.comment(id, data, user);
+  }
+
+  @Put('api/comments/:id')
+  @UseGuards(AuthGuard)
+  editComment(
+    @Param('id') id: string,
+    @Body() data: CommentDTO,
+    @User('id') user,
+  ) {
+    this.logData({ commentId: id, data, user });
+    return this.commentService.edit(id, data, user);
   }
 }

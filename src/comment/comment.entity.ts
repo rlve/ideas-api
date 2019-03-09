@@ -29,7 +29,7 @@ export class CommentEntity {
   toResponseObject(): CommentRO {
     return {
       ...this,
-      author: this.author && this.author.toResponseObject(false),
+      author: this.author && this.author.toResponseObject(),
       idea: this.idea && this.idea.toResponseObject(),
     };
   }

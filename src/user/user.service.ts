@@ -15,7 +15,7 @@ export class UserService {
   async showAll(): Promise<UserRO[]> {
     const users = await this.userRepository.find();
 
-    return users.map(user => user.toResponseObject(false));
+    return users.map(user => user.toResponseObject({ showToken: false }));
   }
 
   async showOne(userId: string): Promise<UserRO> {
@@ -28,7 +28,7 @@ export class UserService {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    return user.toResponseObject();
+    return user.toResponseObject({ fullComments: true });
   }
 
   async login(data: UserDTO): Promise<UserRO> {
@@ -42,7 +42,7 @@ export class UserService {
       );
     }
 
-    return user.toResponseObject(true);
+    return user.toResponseObject({ showToken: true });
   }
 
   async create(data: UserDTO): Promise<UserRO> {
@@ -55,6 +55,6 @@ export class UserService {
     user = await this.userRepository.create(data);
     await this.userRepository.save(user);
 
-    return user.toResponseObject(true);
+    return user.toResponseObject({ showToken: false });
   }
 }
