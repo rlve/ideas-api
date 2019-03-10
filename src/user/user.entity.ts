@@ -46,22 +46,25 @@ export class UserEntity {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  toResponseObject({ showToken = false, fullComments = false } = {}): UserRO {
+  toResponseObject({
+    showToken = false,
+    fullComments = false,
+    fullIdeas = false,
+    fullBookmarks = false,
+  } = {}): UserRO {
     const { id, created, username, token, ideas, bookmarks, comments } = this;
 
-    const getComments = full =>
-      full
-        ? comments.map(comment => comment.toResponseObject())
-        : comments.length;
+    const getAmountOrValues = (condition: boolean, field: any) =>
+      condition ? field.map(data => data.toResponseObject()) : field.length;
 
     return {
       id,
       created,
       username,
       token: showToken ? token : undefined,
-      ideas: ideas && ideas.map(idea => idea.toResponseObject()),
-      bookmarks: bookmarks && bookmarks.map(idea => idea.toResponseObject()),
-      comments: comments && getComments(fullComments),
+      ideas: ideas && getAmountOrValues(fullIdeas, ideas),
+      bookmarks: bookmarks && getAmountOrValues(fullBookmarks, bookmarks),
+      comments: comments && getAmountOrValues(fullComments, comments),
     };
   }
 

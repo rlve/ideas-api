@@ -4,6 +4,7 @@ import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserDTO } from './user.dto';
 import { UserRO } from './user.ro';
+import { UserROOptions } from './user.ro.options';
 
 @Injectable()
 export class UserService {
@@ -12,13 +13,17 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async showAll(page: number): Promise<UserRO[]> {
+  async showAll(
+    page: number = 1,
+    options: UserROOptions = {},
+  ): Promise<UserRO[]> {
     const users = await this.userRepository.find({
+      relations: ['ideas', 'bookmarks', 'comments'],
       take: 20,
       skip: 20 * (page - 1),
     });
 
-    return users.map(user => user.toResponseObject({ showToken: false }));
+    return users.map(user => user.toResponseObject(options));
   }
 
   async showOne(userId: string): Promise<UserRO> {
