@@ -1,0 +1,6 @@
+type Comment {
+  id: ID!
+  created: String!
+  updated: String!
+  content: String!
+}
