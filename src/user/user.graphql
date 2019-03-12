@@ -4,6 +4,7 @@ type User {
   created: String!
   bookmarks: [Idea]
   ideas: [Idea]
+  comments: [Comment]
 }
 
 type Query {

@@ -20,15 +20,19 @@ export class IdeaService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async showAll(page: number = 1, newest: boolean = false): Promise<IdeaRO[]> {
+  async showAll(
+    page: number = 1,
+    newest: boolean = false,
+    fullComments: boolean = false,
+  ): Promise<IdeaRO[]> {
     const ideas = await this.ideaRepository.find({
-      relations: ['author', 'upvotes', 'downvotes'],
+      relations: ['author', 'upvotes', 'downvotes', 'comments'],
       take: 20,
       skip: 20 * (page - 1),
       order: newest && { created: 'DESC' },
     });
 
-    return ideas.map(idea => idea.toResponseObject());
+    return ideas.map(idea => idea.toResponseObject({ fullComments }));
   }
 
   async create(data: IdeaDTO, userId: string): Promise<IdeaRO> {

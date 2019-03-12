@@ -3,4 +3,6 @@ type Comment {
   created: String!
   updated: String!
   content: String!
+  author: User
+  idea: Idea
 }

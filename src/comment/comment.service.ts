@@ -18,6 +18,24 @@ export class CommentService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
+  async readByUser(id: string): Promise<CommentRO[]> {
+    const comment = await this.commentRepository.find({
+      where: { author: { id } },
+      relations: ['author', 'idea'],
+    });
+
+    return comment.map(_ => _.toResponseObject());
+  }
+
+  async readByIdea(id: string): Promise<CommentRO[]> {
+    const comment = await this.commentRepository.find({
+      where: { idea: { id } },
+      relations: ['author', 'idea'],
+    });
+
+    return comment.map(_ => _.toResponseObject());
+  }
+
   async comment(
     id: string,
     data: CommentDTO,

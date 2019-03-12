@@ -7,6 +7,7 @@ type Idea {
   author: User
   upvotes: Int
   downvotes: Int
+  comments: [Comment]
 }
 
 type Query {

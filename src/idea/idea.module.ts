@@ -7,10 +7,11 @@ import { IdeaEntity } from './idea.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { CommentEntity } from 'src/comment/comment.entity';
 import { IdeaResolver } from './idea.resolver';
+import { CommentService } from 'src/comment/comment.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IdeaEntity, UserEntity, CommentEntity])],
   controllers: [IdeaController],
-  providers: [IdeaService, IdeaResolver],
+  providers: [IdeaService, IdeaResolver, CommentService],
 })
 export class IdeaModule {}
