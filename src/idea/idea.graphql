@@ -8,3 +8,7 @@ type Idea {
   upvotes: Int
   downvotes: Int
 }
+
+type Query {
+  ideas(page: Int, newest: Boolean): [Idea]
+}
