@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
     if (request) {
       result = await this.doValidation(request);
     } else {
-      const ctx: any = GqlExecutionContext.create(context);
+      const ctx: any = GqlExecutionContext.create(context).getContext();
       result = await this.doValidation(ctx);
     }
 
@@ -28,13 +28,13 @@ export class AuthGuard implements CanActivate {
   }
 
   async doValidation(requestOrGqlContext: any) {
-    const { authorization } = requestOrGqlContext.headers;
+    const { headers } = requestOrGqlContext;
 
-    if (!authorization) {
+    if (!headers || !headers.authorization) {
       return false;
     }
 
-    requestOrGqlContext.user = await this.validateToken(authorization);
+    requestOrGqlContext.user = await this.validateToken(headers.authorization);
 
     return true;
   }

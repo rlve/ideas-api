@@ -5,11 +5,14 @@ import {
   ResolveProperty,
   Parent,
   Mutation,
+  Context,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { CommentService } from 'src/comment/comment.service';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { UserDTO } from './user.dto';
+import { AuthGuard } from 'src/shared/auth.guard';
+import { UserEntity } from './user.entity';
 
 @Resolver('User')
 export class UserResolver {
@@ -30,6 +33,12 @@ export class UserResolver {
   @Query()
   async user(@Args('id') id: string) {
     return this.userService.showOne(id);
+  }
+
+  @Query()
+  @UseGuards(AuthGuard)
+  async whoami(@Context('user') user: UserEntity) {
+    return this.userService.showOne(user.id);
   }
 
   @Mutation()

@@ -15,6 +15,7 @@ type Auth {
 type Query {
   users(page: Int): [User]
   user(id: String!): User!
+  whoami: User!
 }
 
 type Mutation {
