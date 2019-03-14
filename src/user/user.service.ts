@@ -33,10 +33,10 @@ export class UserService {
     });
 
     if (!user) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    return user.toResponseObject({ fullComments: true });
+    return user.toResponseObject({ fullComments: true, fullIdeas: true });
   }
 
   async login(data: UserDTO): Promise<UserRO> {

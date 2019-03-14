@@ -7,6 +7,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,13 +15,26 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { authorization } = request.headers;
+
+    let result: boolean;
+    if (request) {
+      result = await this.doValidation(request);
+    } else {
+      const ctx: any = GqlExecutionContext.create(context);
+      result = await this.doValidation(ctx);
+    }
+
+    return result;
+  }
+
+  async doValidation(requestOrGqlContext: any) {
+    const { authorization } = requestOrGqlContext.headers;
 
     if (!authorization) {
       return false;
     }
 
-    request.user = await this.validateToken(authorization);
+    requestOrGqlContext.user = await this.validateToken(authorization);
 
     return true;
   }
