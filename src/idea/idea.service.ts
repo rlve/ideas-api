@@ -80,7 +80,10 @@ export class IdeaService {
   async delete(id: string, userId: string): Promise<IdeaRO> {
     this.validateId(id);
 
-    const idea = await this.ideaRepository.findOne({ where: { id } });
+    const idea = await this.ideaRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
 
     this.ensureExistence(idea);
     this.ensureOwnership(idea, userId);
@@ -97,7 +100,7 @@ export class IdeaService {
 
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['bookmarks'],
+      relations: ['bookmarks', 'ideas'],
     });
 
     const { bookmarks } = user;
@@ -112,7 +115,11 @@ export class IdeaService {
     user.bookmarks.push(idea);
     await this.userRepository.save(user);
 
-    return user.toResponseObject();
+    return user.toResponseObject({
+      fullComments: true,
+      fullIdeas: true,
+      fullBookmarks: true,
+    });
   }
 
   async deleteBookmark(id: string, userId: string): Promise<UserRO> {
@@ -122,7 +129,7 @@ export class IdeaService {
 
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['bookmarks'],
+      relations: ['bookmarks', 'ideas'],
     });
 
     const { bookmarks } = user;
@@ -137,7 +144,11 @@ export class IdeaService {
     user.bookmarks = user.bookmarks.filter(bookmark => bookmark.id !== id);
     await this.userRepository.save(user);
 
-    return user.toResponseObject();
+    return user.toResponseObject({
+      fullComments: true,
+      fullIdeas: true,
+      fullBookmarks: true,
+    });
   }
 
   async vote(id: string, userId: string, vote: Votes): Promise<IdeaRO> {
