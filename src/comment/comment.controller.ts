@@ -12,35 +12,18 @@ import { CommentService } from './comment.service';
 import { AuthGuard } from 'src/shared/auth.guard';
 import { CommentDTO } from './comment.dto';
 import { User } from 'src/user/user.decorator';
+import { LoggerExt } from 'src/shared/logging.extension';
 
 @Controller()
 export class CommentController {
   constructor(private commentService: CommentService) {}
 
-  private logger = new Logger('IdeaController');
-
-  // TODO: DRY!
-  private logData(options: any) {
-    const { data, id, user, commentId } = options;
-
-    if (data) {
-      this.logger.log(`DATA: ${JSON.stringify(data)}`);
-    }
-    if (id) {
-      this.logger.log(`IDEA: ${JSON.stringify(id)}`);
-    }
-    if (user) {
-      this.logger.log(`USER: ${JSON.stringify(user)}`);
-    }
-    if (commentId) {
-      this.logger.log(`COMMENT: ${JSON.stringify(commentId)}`);
-    }
-  }
+  private logger = LoggerExt('CommentController');
 
   @Post('api/idea/:id/comment')
   @UseGuards(AuthGuard)
   comment(@Param('id') id: string, @Body() data: CommentDTO, @User('id') user) {
-    this.logData({ id, data, user });
+    this.logger.logData({ idea: id, data, user });
     return this.commentService.comment(id, data, user);
   }
 
@@ -51,14 +34,14 @@ export class CommentController {
     @Body() data: CommentDTO,
     @User('id') user,
   ) {
-    this.logData({ commentId: id, data, user });
+    this.logger.logData({ comment: id, data, user });
     return this.commentService.edit(id, data, user);
   }
 
   @Delete('api/comments/:id')
   @UseGuards(AuthGuard)
   deleteComment(@Param('id') id: string, @User('id') user) {
-    this.logData({ commentId: id, user });
+    this.logger.logData({ comment: id, user });
     return this.commentService.delete(id, user);
   }
 }

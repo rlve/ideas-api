@@ -36,6 +36,17 @@ export class CommentService {
     return comment.map(_ => _.toResponseObject());
   }
 
+  async read(id: string): Promise<CommentRO> {
+    const comment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['author', 'idea'],
+    });
+
+    this.ensureExistence(comment);
+
+    return comment.toResponseObject();
+  }
+
   async comment(
     id: string,
     data: CommentDTO,
@@ -72,16 +83,14 @@ export class CommentService {
       relations: ['author'],
     });
 
-    if (!comment) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (comment.author.id !== userId) {
-      throw new HttpException('Permission denied.', HttpStatus.UNAUTHORIZED);
-    }
+    this.ensureExistence(comment);
+    this.ensureOwnership(comment, userId);
 
     await this.commentRepository.update({ id }, data);
-    comment = await this.commentRepository.findOne({ where: { id } });
+    comment = await this.commentRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
 
     return comment.toResponseObject();
   }
@@ -92,16 +101,23 @@ export class CommentService {
       relations: ['author'],
     });
 
-    if (!comment) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (comment.author.id !== userId) {
-      throw new HttpException('Permission denied.', HttpStatus.UNAUTHORIZED);
-    }
+    this.ensureExistence(comment);
+    this.ensureOwnership(comment, userId);
 
     await this.commentRepository.delete({ id });
 
     return comment.toResponseObject();
+  }
+
+  private ensureExistence(comment: CommentEntity) {
+    if (!comment) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  private ensureOwnership(comment: CommentEntity, userId: string) {
+    if (comment.author.id !== userId) {
+      throw new HttpException('Permission denied.', HttpStatus.UNAUTHORIZED);
+    }
   }
 }
